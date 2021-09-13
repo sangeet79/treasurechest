@@ -83,9 +83,10 @@ minetest.register_node("treasurechest:empty", {
 	-- also allows owner to add items to chest
  	on_rightclick = function(pos, node, clicker)
 		local meta = minetest.get_meta(pos)		
-		local taker = clicker:get_player_name() 
+		local taker = clicker:get_player_name()
+		local takerip = clicker:get_player_ip(taker) -- get player ip
 		local giver = meta:get_string("owner")
-		local taken = meta:get_string(taker)
+		local taken = meta:get_string(takerip) -- changed so that inventory is now created not for the name, but for the ip
 		local inv = meta:get_inventory()
 		-- if first time examining chest, creates new inventory, copying the owner's inventory
 		if taken ~= "yes" then
