@@ -1,17 +1,17 @@
 temp_inv = {}
 
 -- formspec setup
-local function get_treasure_chest_formspec(pos, taker)
+local function get_treasure_chest_formspec(pos, takerip)
 	local spos = pos.x .. "," .. pos.y .. "," .. pos.z
 	local formspec =
 		"size[8,9]" ..
 		default.gui_bg ..
 		default.gui_bg_img ..
 		default.gui_slots ..
-		"list[nodemeta:" .. spos .. ";" .. taker .. ";0,0.3;8,4;]" ..
+		"list[nodemeta:" .. spos .. ";" .. takerip .. ";0,0.3;8,4;]" ..
 		"list[current_player;main;0,4.85;8,1;]" ..
 		"list[current_player;main;0,6.08;8,3;8]" ..
-		"listring[nodemeta:" .. spos .. ";" .. taker .. "]" ..
+		"listring[nodemeta:" .. spos .. ";" .. takerip .. "]" ..
 		"listring[current_player;main]" ..
 		default.get_hotbar_bg(0,4.85)
  return formspec
@@ -84,23 +84,23 @@ minetest.register_node("treasurechest:empty", {
  	on_rightclick = function(pos, node, clicker)
 		local meta = minetest.get_meta(pos)		
 		local taker = clicker:get_player_name()
-		local takerip = clicker:get_player_ip(taker) -- get player ip
+        local takerip = tostring(minetest.get_player_ip(taker))
 		local giver = meta:get_string("owner")
-		local taken = meta:get_string(takerip) -- changed so that inventory is now created not for the name, but for the ip
+		local taken = meta:get_string(takerip)
 		local inv = meta:get_inventory()
 		-- if first time examining chest, creates new inventory, copying the owner's inventory
 		if taken ~= "yes" then
 			inv:set_size(taker, 8*4)		
 			for i=1,32 do
 				temp_inv = inv:get_stack(giver, i)
-				inv:set_stack(taker, i, temp_inv)
+				inv:set_stack(takerip, i, temp_inv)
 			end	
-			meta:set_string(taker, "yes")		
+			meta:set_string(takerip, "yes")		
 		end
 		minetest.show_formspec(
 			taker,
 			"treasurechest:empty",
-			get_treasure_chest_formspec(pos, taker)
+			get_treasure_chest_formspec(pos, takerip)
 		)	
 	end,
 	
